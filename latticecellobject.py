@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+
 from random import random
 # random() returns random number between 0 and 1
 from random import choice
@@ -11,7 +12,8 @@ def pm():
     """this function returns + or - 1 psuedorandomly"""
     return choice((-1, 1))
 
-class lattice_cell_object:
+
+class Lattice_Cell_Object:
     """This class contains a state that is its current state,
     and can process several messages.
     It is meant to simulate a lattice site in a lattice
@@ -32,15 +34,15 @@ class lattice_cell_object:
     def __init__(self, molecprob = 0.01, reaction_rate = 0.1,
                  reaction_favoritism = 2.0, assoc_stabilization = 0.1,
                  assoc_favoritism = 2.0, excit_prob = 0.01,
-                 move_prob = 0.5
-                 dimensions = 2):
+                 move_prob = 0.5,
+                 dimension = 2):
         """This initializes an instance of lattice_cell_object with a
         chance of population
         of molecules determined by molecprob.
         All arguments are optional.
         Syntax: __init__(molecprob, reaction_rate,
         reaction_favoritism, assoc_stabilization,
-        association_favoritism, dimensions)
+        association_favoritism, dimension)
         molecprob is an optional argument that must be between 0 and 1.
         It is the probability of a molecule starting in this lattice site.
         reaction_favoritism is the relative amount the
@@ -50,15 +52,15 @@ class lattice_cell_object:
         assoc_favoritism is the relative amount the
         positive product is favored in staying associated.
         excit_prob is the probability of an excitation at any step
-        dimensions is the dimensionality of the lattice. Probably
+        dimension is the dimensionality of the lattice. Probably
         going to stay at 2d.
         Returns None."""
         # Check values of inputs
         if type(molecprob) != float:
             raise TypeError('molecprob must be a real number (float)')
-        elif moleprob >= 1:
+        elif molecprob >= 1:
             raise ValueError('moleprob must be less than 1')
-        elif moleprob <= 0:
+        elif molecprob <= 0:
             raise ValueError('moleprob must be greater than 0')
         elif reaction_rate <= 0:
             raise ValueError('reaction rate must be greater than 0')
@@ -72,19 +74,19 @@ class lattice_cell_object:
               or move_prob <= 0):
             raise ValueError('move prob must be between 0 and 1')
         # With Monte Carlo-like probability sets occupancy for catalyst.
-        if random() > molecprob:
+        if random() < molecprob:
             self.catalyst = 1
         else:
             self.catalyst = 0
         # With Monte Carlo-like probability sets occupancy for htmf.
         # If occupied, can be in pm 1 orientation
-        if random() > molecprob:
+        if random() < molecprob:
             self.htmf = pm()
         else:
             self.htmf = 0
         # With Monte Carlo-like probability sets occupancy for cinnamate.
         # If occupied, can be in pm 1 orientation
-        if random() > molecprob:
+        if random() < molecprob:
             self.cinna = pm()
         else:
             self.cinna = 0
@@ -102,11 +104,22 @@ class lattice_cell_object:
         self.p_assoc_neg = assoc_stabilization / assoc_favoritism
         self.excit_prob  = excit_prob
         self.move_prob   = move_prob
-        self.max_move    = 2 * dimensions
+        self.max_move    = 2 * dimension
 
     def __repr__(self):
         """Returns current occupation of this instance"""
-        return self.catalyst, self.htmf, self.cinna, self.product
+        return ','.join(map(str, (self.catalyst, self.htmf,
+                                   self.cinna, self.product)))
+        # !!! This needs to return a string.
+        # !!! cannot return a list
+        # !!! see testenv for possible implementation
+        #
+        # This has been fixed. Now returns in a way that's good
+        # for Mathematica to interpret. Also, VERY IMPORTANT to
+        # note that this cannot be any longer without changing
+        # sampl_templ in initializelat, otherwise characters
+        # will be dropped from the end sometimes.
+        #
 
     def move(self):
         """If there is anything in this lattice site,
@@ -118,16 +131,22 @@ class lattice_cell_object:
         excitation, cinna, product)"""
         # square each occupation (to avoid problems with negatives) and sum
         # this will be used to see if anything is here
-        sum_state_squared = self.catalyst**2 + self.htmf**2 +
-        self.cinna**2 + self.product**2
-        if sum_state_squared > 0:
-            move_direc = randint(1, self.max_move)
+        sum_state_squared = self.catalyst**2 + self.htmf**2 + \
+                                self.cinna**2 + self.product**2
+        # Only if the total occupancy is non-zero will this be true.
+        # If there is something here, it will attempt to move it
+        # by returning a direction and the current state.
+        # If it's empty, it will return None.
+        if sum_state_squared:
+            move_direc = randint(0, (self.max_move - 1))
             return (move_direc, self.catalyst, self.catalyst_excitation_state,
                     self.htmf, self.htmf_excitation_state, self.cinna,
                     self.product)
+        else:
+            return None
 
     def move_result(self, rcatalyst, rcatalyst_excitation_state,
-                    rhtmf, rhtmf_excitation_state, rcinna, rproduct)
+                    rhtmf, rhtmf_excitation_state, rcinna, rproduct):
         """This will be called after an attempted move to re-set
         the state of this instance based on what the other instance
         didn't accept.
@@ -138,8 +157,8 @@ class lattice_cell_object:
         self.htmf     = rhtmf
         self.cinna    = rcinna
         self.product  = rproduct
-        self.catalyst_excited_state = self.catalyst_excited_state
-        self.htmf_excited_state     = self.htmf_excited_state
+        self.catalyst_excitation_state = rcatalyst_excitation_state
+        self.htmf_excitation_state     = rhtmf_excitation_state
 
     def excite(self):
         """This will check if there is anything to be excited,
@@ -165,18 +184,30 @@ class lattice_cell_object:
         occupancy_product = self.catalyst * self.htmf * self.cinna
         total_excit = max(self.htmf_excitation_state,
                           self.catalyst_excitation_state)
-        if occupancy_product == -1:
-            weighted_react_prob = total_excit * p_react_neg
+        # If not all occupied, skip this, move to reducing excitation
+        # state
+        if occupancy_product == 0:
+            pass
+        # This will product the negative product with some prob.
+        # If it does react, it will create product,
+        # and remove both reactants and all excitation.
+        elif occupancy_product == -1:
+            weighted_react_prob = total_excit * self.p_react_neg
             if random < weighted_react_prob:
                 self.product = -1
                 self.htmf    =  0
+                self.htmf_excitation_state     = 0
                 self.cinna   =  0
+                self.catalyst_excitation_state = 0
+        # Does the same except for the positive product.
         elif occupancy_product == 1:
-            weighted_react_prob = total_excit * p_react_pos
+            weighted_react_prob = total_excit * self.p_react_pos
             if random < weighted_react_prob:
                 self.product = 1
                 self.htmf    = 0
-                self.cinna   = 0
+                self.htmf_excitation_state     = 0
+                self.cinna   =  0
+                self.catalyst_excitation_state = 0
         # Reduce the excitation state
         self.htmf_excitation_state /= 2
         self.catalyst_excitation_state /= 2
@@ -201,7 +232,7 @@ class lattice_cell_object:
         #
         # First things first: if there is a product already here,
         # this site will not accept anything:
-        if self.product != 0;
+        if self.product != 0:
             return (pcatalyst, pcatalyst_excitation_state,
                     phtmf, phtmf_excitation_state, pcinna, pproduct)
         # product of signed occupancies to determine which association
@@ -228,7 +259,7 @@ class lattice_cell_object:
                 rproduct     = 0
                 if self.catalyst == 0:
                     self.catalyst = pcatalyst
-                    self.catalyst_excitation_state =
+                    self.catalyst_excitation_state = \
                         pcatalyst_excitation_state
                     rcatalyst     = 0
                     rcatalyst_excitation_state = 0
