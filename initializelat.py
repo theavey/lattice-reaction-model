@@ -17,15 +17,16 @@ class Lattice:
         Returns None."""
         # input checks:
         if type(size) != int:
-            raise TypeError("size must be an integer")
+            raise TypeError("size must be an integer, given %s" % type(size))
         if size < 1:
             raise ValueError('size must be greater than 1')
         if type(dimension) != int:
             raise TypeError('dimension must be an integer')
         if dimension < 1:
             raise ValueError('dimension must be >= 1')
-        if type(arguments) != tuple:
-            raise TypeError('arguments must be a tuple')
+        if isinstance(arguments, basestring):
+            raise TypeError('arguments must be a list-like, given %s' \
+                            % type(arguments))
         if len(arguments) != 7:
             raise ValueError('arguments must be len 7')
         self.dimension = dimension
@@ -76,13 +77,13 @@ class Lattice:
         Returns initialized Lattice Cell Object."""
         # get arguments from arguments tuple to pass to
         # site.Lattice_Cell_Object to initialize each lattice site
-        molecprob           = arguments[0]
-        reaction_rate       = arguments[1]
-        reaction_favoritism = arguments[2]
-        assoc_stabilization = arguments[3]
-        assoc_favoritism    = arguments[4]
-        excit_prob          = arguments[5]
-        move_prob           = arguments[6]
+        molecprob           = float(arguments[0])
+        reaction_rate       = float(arguments[1])
+        reaction_favoritism = float(arguments[2])
+        assoc_stabilization = float(arguments[3])
+        assoc_favoritism    = float(arguments[4])
+        excit_prob          = float(arguments[5])
+        move_prob           = float(arguments[6])
         return site.Lattice_Cell_Object(molecprob, reaction_rate,
                                  reaction_favoritism, assoc_stabilization,
                                  assoc_favoritism, excit_prob,
@@ -144,8 +145,8 @@ class Lattice:
                         # unique it should work fine to converge to
                         # uniform sampling.
                         #
-                        move_to = self.ob_lattice.take(
-                            self.size * (i + move_direc[0]) +
+                        move_to = self.ob_lattice.take(\
+                            self.size * (i + move_direc[0]) +\
                             (j + move_direc[1]), mode = 'wrap')
                         amove_out = move_to.accept_move(
                                             move_out[1], move_out[2],

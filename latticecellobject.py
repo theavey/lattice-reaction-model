@@ -57,7 +57,8 @@ class Lattice_Cell_Object:
         Returns None."""
         # Check values of inputs
         if type(molecprob) != float:
-            raise TypeError('molecprob must be a real number (float)')
+            raise TypeError('molecprob must be a real number (float), %s'
+                            % type(molecprob))
         elif molecprob >= 1:
             raise ValueError('moleprob must be less than 1')
         elif molecprob <= 0:
@@ -92,8 +93,8 @@ class Lattice_Cell_Object:
             self.cinna = 0
         # sets product occupancy to 0, as well as excitation state
         self.product = 0
-        self.htmf_excitation_state = 0
-        self.catalyst_excitation_state = 0
+        self.htmf_excitation_state = 0.0
+        self.catalyst_excitation_state = 0.0
         # Need to define relevant variables for this!!
         # They should be taken as input to init and set as internal
         # variables here
@@ -105,6 +106,7 @@ class Lattice_Cell_Object:
         self.excit_prob  = excit_prob
         self.move_prob   = move_prob
         self.max_move    = 2 * dimension
+        #self.counter     = 1
 
     def __repr__(self):
         """Returns current occupation of this instance"""
@@ -165,12 +167,15 @@ class Lattice_Cell_Object:
         then it will try to excite it with probability excit_prob.
         syntax: excite()
         Returns None"""
+        #randomnumber = random
+        #print randomnumber, self.catalyst, self.excit_prob
         if self.catalyst != 0:
-            if random < self.excit_prob:
-                self.catalyst_excitation_state = 1
+            if random() < self.excit_prob:
+                self.catalyst_excitation_state = 1.0
         if self.htmf != 0:
-            if random < self.excit_prob:
-                self.htmf_excitation_state = 1
+            if random() < self.excit_prob:
+                self.htmf_excitation_state = 1.0
+        #print self.catalyst_excitation_state
 
     def react(self):
         """react takes no arguments. It will check the state of this instance,
@@ -193,7 +198,7 @@ class Lattice_Cell_Object:
         # and remove both reactants and all excitation.
         elif occupancy_product == -1:
             weighted_react_prob = total_excit * self.p_react_neg
-            if random < weighted_react_prob:
+            if random() < weighted_react_prob:
                 self.product = -1
                 self.htmf    =  0
                 self.htmf_excitation_state     = 0
@@ -202,15 +207,15 @@ class Lattice_Cell_Object:
         # Does the same except for the positive product.
         elif occupancy_product == 1:
             weighted_react_prob = total_excit * self.p_react_pos
-            if random < weighted_react_prob:
+            if random() < weighted_react_prob:
                 self.product = 1
                 self.htmf    = 0
                 self.htmf_excitation_state     = 0
                 self.cinna   =  0
                 self.catalyst_excitation_state = 0
         # Reduce the excitation state
-        self.htmf_excitation_state /= 2
-        self.catalyst_excitation_state /= 2
+        self.htmf_excitation_state /= 2.
+        self.catalyst_excitation_state /= 2.
 
     def accept_move(self, pcatalyst, pcatalyst_excitation_state,
                     phtmf, phtmf_excitation_state, pcinna, pproduct):
@@ -247,9 +252,9 @@ class Lattice_Cell_Object:
         else:
             stabil = self.p_assoc     * occupancy_sum
         # check to see if it will break up based on stabil
-        if random < stabil:
+        if random() < stabil:
             # stay together
-            if random < self.move_prob:
+            if random() < self.move_prob:
                 # accepts move of everything if not occupied
                 # now need to check occupancies
                 # if empty, moves
@@ -287,7 +292,7 @@ class Lattice_Cell_Object:
         else:
             # separate
             # will move each independently with own move prob
-            if random < (self.move_prob - abs(self.catalyst)):
+            if random() < (self.move_prob - abs(self.catalyst)):
                 # Moves catalyst with some probability give by move_prob.
                 # If catalyst site is occupied, because move_prob < 1,
                 # then it is not possible to move the catalyst
@@ -299,7 +304,7 @@ class Lattice_Cell_Object:
             else:
                 rcatalyst = pcatalyst
                 rcatalyst_excitation_state = phtmf_excitation_state
-            if random < (self.move_prob - abs(self.htmf)):
+            if random() < (self.move_prob - abs(self.htmf)):
                 self.htmf = phtmf
                 rhtmf     = 0
                 self.htmf_excitation_state = phtmf_excitation_state
@@ -307,17 +312,19 @@ class Lattice_Cell_Object:
             else:
                 rhtmf = phtmf
                 rhtmf_excitation_state = phtmf_excitation_state
-            if random < (self.move_prob - abs(self.cinna)):
+            if random() < (self.move_prob - abs(self.cinna)):
                 self.cinna = pcinna
                 rcinna     = 0
             else:
                 rcinna = pcinna
-            if random < (self.move_prob - abs(self.product)):
+            if random() < (self.move_prob - abs(self.product)):
             # self.product is 0, but this shouldn't affect anything
                 self.product = pproduct
                 rproduct     = 0
             else:
                 rproduct = pproduct
+        #print  (rcatalyst, rcatalyst_excitation_state,
+        #        rhtmf, rhtmf_excitation_state, rcinna, rproduct)
         return (rcatalyst, rcatalyst_excitation_state,
                 rhtmf, rhtmf_excitation_state, rcinna, rproduct)
         
