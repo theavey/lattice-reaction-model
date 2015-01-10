@@ -1,19 +1,20 @@
-import latticecellobject as site
+import mclatticecellobject as site
 import numpy as np
 
 class Lattice:
     """This class will create a lattice object with size
     (size)**dimension.
-    It is able to apply a function to all sites in the lattice.
+    It is able to apply a keyword to all sites in the lattice.
     Additionally, because it's needed by moving in the cells,
-    it can take returned arguments, apply them to a specified
-    other cell, then give input back to the original mover."""
+    it can take returned arguments after applying a keyword, apply them to
+    a specified other cell, then give input back to the original mover."""
 
     def __init__(self, arguments, size = 3, dimension = 2):
         """This will create a lattice with edge length
         size, (and dimension dimension?).
-        All arguments optional.
-        syntax: Lattice(size, dimension)
+        First argument in inputs to each lattice site.
+        Other arguments are optional.
+        syntax: Lattice(arguments, size, dimension)
         Returns None."""
         # input checks:
         if type(size) != int:
@@ -53,12 +54,15 @@ class Lattice:
             # To get the first part of the first item, reference as
             # self.moves[0][0]
             self.moves = ((-1, 0), (0, -1), (1, 0), (0, 1))
-            # This is a template for sample output.
+            # This sample_templ is a template for output.
             # It is an array of strings with length defined by the number
             # in the 'a10' at the end.
             # The length should be no greater than 10
             # because the very longest possible state returned should
-            # be '1 -1 -1 -1' (though hopefully that won't ever happen).
+            # be '1,-1,-1,-1' (though hopefully that won't ever happen).
+            # If for any reason the length needs to be greater than that,
+            # this length needs to be changed, or the output will be
+            # truncated to 10 characters.
             self.sample_templ = np.empty((size, size), dtype = 'a10')
         else:
             raise ValueError('Lattice has not be taught to handle ' + \
@@ -83,11 +87,11 @@ class Lattice:
         assoc_stabilization = float(arguments[3])
         assoc_favoritism    = float(arguments[4])
         excit_prob          = float(arguments[5])
-        move_prob           = float(arguments[6])
+        beta                = float(arguments[6])
         return site.Lattice_Cell_Object(molecprob, reaction_rate,
                                  reaction_favoritism, assoc_stabilization,
                                  assoc_favoritism, excit_prob,
-                                 move_prob, self.dimension)
+                                 beta, self.dimension)
 
     def over_sites(self, kw):
         """This function will take a keyword and apply that keyword
@@ -96,6 +100,21 @@ class Lattice:
         Syntax over_sites(keyword)
         Returns None, except if keyword == sample,
         then it will return the occupation state of each site"""
+        #
+        #
+        # There might be a better way to do this: three things
+        # I saw on the Python page on classes:
+        # 1. define __iter__ and next in the class definition of the
+        # lattice, then it should be easily iterable.
+        # 2. use a generator
+        # 3. use a generator expression
+        # The main problem I see with these right now is that it might
+        # be difficult to then reference wherever it is trying to
+        # move to.
+        # I don't know if there are any benefits. Might help
+        # readability a little bit, but probably not a ton.
+        #
+        #
         if type(kw) != str:
             raise TypeError('keyword must be a string')
         # Simple for excite and react:
@@ -137,11 +156,11 @@ class Lattice:
                         # passed back to the move_result function
                         # of the original lattice site.
                         #
-                        # Had some trouble indexing past ends when it wanted
-                        # to move past the end, to np.take wraps around edges
+                        # Had some trouble indexing past edges when it wanted
+                        # to move past the ends, so np.take wraps around edges
                         # but it also indexes like a flattened array.
                         # That's why the math is needed for the index.
-                        # Not certain this is write, but as long as it is 
+                        # Not certain this is right, but as long as it is 
                         # unique it should work fine to converge to
                         # uniform sampling.
                         #
