@@ -1,0 +1,587 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 10.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     21807,        577]
+NotebookOptionsPosition[     21467,        561]
+NotebookOutlinePosition[     21826,        577]
+CellTagsIndexPosition[     21783,        574]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"cell", "[", "input_", "]"}], ":=", 
+   RowBox[{"Parallelize", "[", 
+    RowBox[{"DeleteCases", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"White", ",", 
+          RowBox[{"Rectangle", "[", 
+           RowBox[{"{", 
+            RowBox[{"0", ",", "0"}], "}"}], "]"}]}], "}"}], ",", 
+        RowBox[{
+         RowBox[{"input", "[", 
+          RowBox[{"[", "1", "]"}], "]"}], " ", 
+         RowBox[{"{", 
+          RowBox[{"Gray", ",", 
+           RowBox[{"Rectangle", "[", 
+            RowBox[{"{", 
+             RowBox[{"0", ",", "0"}], "}"}], "]"}]}], "}"}]}], ",", " ", 
+        RowBox[{"redArrow", "[", 
+         RowBox[{"input", "[", 
+          RowBox[{"[", "2", "]"}], "]"}], "]"}], ",", " ", 
+        RowBox[{"greenArrow", "[", 
+         RowBox[{"input", "[", 
+          RowBox[{"[", "3", "]"}], "]"}], "]"}], ",", 
+        RowBox[{"productCircle", "[", 
+         RowBox[{"input", "[", 
+          RowBox[{"[", "4", "]"}], "]"}], "]"}]}], "}"}], ",", "0", ",", 
+      "2"}], "]"}], "]"}]}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"cellProd", "[", "input_", "]"}], ":=", 
+   RowBox[{"DeleteCases", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"White", ",", 
+         RowBox[{"Rectangle", "[", 
+          RowBox[{"{", 
+           RowBox[{"0", ",", "0"}], "}"}], "]"}]}], "}"}], ",", 
+       RowBox[{"productCircle", "[", 
+        RowBox[{"input", "[", 
+         RowBox[{"[", "4", "]"}], "]"}], "]"}]}], "}"}], ",", "0", ",", "2"}],
+     "]"}]}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"redArrow", "[", "pmseed_", "]"}], ":=", 
+   RowBox[{
+    RowBox[{"Abs", "[", "pmseed", "]"}], "*", 
+    RowBox[{"{", 
+     RowBox[{"Red", ",", 
+      RowBox[{"Arrowheads", "[", 
+       RowBox[{".2", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"pmseed", "-", "1"}], ",", 
+          RowBox[{"1", "+", "pmseed"}]}], "}"}]}], "]"}], ",", 
+      RowBox[{"Arrow", "[", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"0.2", ",", "0.1"}], "}"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"0.2", ",", "0.9"}], "}"}]}], "}"}], "]"}]}], "}"}]}]}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"greenArrow", "[", "pmseed_", "]"}], ":=", 
+   RowBox[{
+    RowBox[{"Abs", "[", "pmseed", "]"}], "*", 
+    RowBox[{"{", 
+     RowBox[{"Green", ",", 
+      RowBox[{"Arrowheads", "[", 
+       RowBox[{".2", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"pmseed", "-", "1"}], ",", 
+          RowBox[{"1", "+", "pmseed"}]}], "}"}]}], "]"}], ",", 
+      RowBox[{"Arrow", "[", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"0.8", ",", "0.1"}], "}"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"0.8", ",", "0.9"}], "}"}]}], "}"}], "]"}]}], "}"}]}]}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"productCircle", "[", "pmseed_", "]"}], ":=", 
+   RowBox[{"If", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"pmseed", "\[Equal]", "1"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"Blue", ",", 
+       RowBox[{"Circle", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"0.5", ",", "0.5"}], "}"}], ",", "0.5"}], "]"}]}], "}"}], 
+     ",", "\[IndentingNewLine]", 
+     RowBox[{"If", "[", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"pmseed", "\[Equal]", 
+        RowBox[{"-", "1"}]}], ",", "\[IndentingNewLine]", 
+       RowBox[{"{", 
+        RowBox[{"Orange", ",", 
+         RowBox[{"Circle", "[", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{"0.5", ",", "0.5"}], "}"}], ",", "0.5"}], "]"}]}], "}"}], 
+       ",", "\[IndentingNewLine]", "0"}], "]"}]}], "]"}]}], 
+  "\[IndentingNewLine]", "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"plotASample", "[", "sample_", "]"}], ":=", "\[IndentingNewLine]", 
+   
+   RowBox[{"Block", "[", 
+    RowBox[{
+     RowBox[{"{", "size", "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"size", "=", 
+       SqrtBox[
+        RowBox[{"Length", "[", "sample", "]"}]]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"Parallelize", "[", 
+       RowBox[{"GraphicsGrid", "[", 
+        RowBox[{
+         RowBox[{"Table", "[", 
+          RowBox[{
+           RowBox[{"Graphics", "[", 
+            RowBox[{
+             RowBox[{"cell", "[", 
+              RowBox[{"sample", "[", 
+               RowBox[{"[", 
+                RowBox[{
+                 RowBox[{"size", "*", 
+                  RowBox[{"(", 
+                   RowBox[{"i", "-", "1"}], ")"}]}], "+", "j"}], "]"}], "]"}],
+               "]"}], ",", 
+             RowBox[{"PlotRegion", "\[Rule]", 
+              RowBox[{"{", 
+               RowBox[{
+                RowBox[{"{", 
+                 RowBox[{"0", ",", " ", "0"}], "}"}], ",", " ", 
+                RowBox[{"{", 
+                 RowBox[{"1", ",", " ", "1"}], "}"}]}], "}"}]}]}], "]"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"i", ",", "size"}], "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"j", ",", "size"}], "}"}]}], "]"}], ",", 
+         RowBox[{"Frame", "\[Rule]", "None"}]}], "]"}], "]"}]}]}], "]"}]}], 
+  "\[IndentingNewLine]", "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"plotASampleProduct", "[", "sample_", "]"}], ":=", 
+   "\[IndentingNewLine]", 
+   RowBox[{"Block", "[", 
+    RowBox[{
+     RowBox[{"{", "size", "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"size", "=", 
+       SqrtBox[
+        RowBox[{"Length", "[", "sample", "]"}]]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"Parallelize", "[", 
+       RowBox[{"GraphicsGrid", "[", 
+        RowBox[{
+         RowBox[{"Table", "[", 
+          RowBox[{
+           RowBox[{"Graphics", "[", 
+            RowBox[{
+             RowBox[{"cellProd", "[", 
+              RowBox[{"sample", "[", 
+               RowBox[{"[", 
+                RowBox[{
+                 RowBox[{"size", "*", 
+                  RowBox[{"(", 
+                   RowBox[{"i", "-", "1"}], ")"}]}], "+", "j"}], "]"}], "]"}],
+               "]"}], ",", 
+             RowBox[{"PlotRegion", "\[Rule]", 
+              RowBox[{"{", 
+               RowBox[{
+                RowBox[{"{", 
+                 RowBox[{"0", ",", " ", "0"}], "}"}], ",", " ", 
+                RowBox[{"{", 
+                 RowBox[{"1", ",", " ", "1"}], "}"}]}], "}"}]}]}], "]"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"i", ",", "size"}], "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"j", ",", "size"}], "}"}]}], "]"}], ",", 
+         RowBox[{"Frame", "\[Rule]", "None"}]}], "]"}], "]"}]}]}], "]"}]}], 
+  "\[IndentingNewLine]", "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"plotMovie", "[", "input_", "]"}], ":=", "\[IndentingNewLine]", 
+   RowBox[{"Block", "[", 
+    RowBox[{
+     RowBox[{"{", "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"Parallelize", "[", 
+      RowBox[{"ListAnimate", "[", 
+       RowBox[{
+        RowBox[{"createMovieFrames", "[", "input", "]"}], ",", 
+        RowBox[{"AnimationRate", "\[Rule]", "0.8"}]}], "]"}], "]"}]}], 
+    "]"}]}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"createMovieFrames", "[", "input_", "]"}], ":=", 
+   "\[IndentingNewLine]", 
+   RowBox[{"Block", "[", 
+    RowBox[{
+     RowBox[{"{", "size", "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"size", " ", "=", " ", 
+       RowBox[{"Length", "[", "input", "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"Parallelize", "[", 
+       RowBox[{"Table", "[", 
+        RowBox[{
+         RowBox[{"plotASample", "[", 
+          RowBox[{"input", "[", 
+           RowBox[{"[", "t", "]"}], "]"}], "]"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"t", ",", "1", ",", "size", ",", "1"}], "}"}]}], "]"}], 
+       "]"}]}]}], "]"}]}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"exportMovieSWF", "[", 
+    RowBox[{"input_", ",", "name_"}], "]"}], ":=", "\[IndentingNewLine]", 
+   RowBox[{"Export", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"ToString", "[", "name", "]"}], "<>", "\"\<.swf\>\""}], ",", 
+     RowBox[{"createMovieFrames", "[", "input", "]"}]}], "]"}]}], 
+  "\[IndentingNewLine]", "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"exportMovieAVI", "[", 
+    RowBox[{"input_", ",", "name_"}], "]"}], ":=", "\[IndentingNewLine]", 
+   RowBox[{"Export", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"ToString", "[", "name", "]"}], "<>", "\"\<.avi\>\""}], ",", 
+     RowBox[{"ParallelMap", "[", 
+      RowBox[{"Image", ",", 
+       RowBox[{"createMovieFrames", "[", "input", "]"}]}], "]"}]}], "]"}]}], 
+  "\[IndentingNewLine]", "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"getProducts", "[", "input_", "]"}], ":=", 
+   RowBox[{"(*", 
+    RowBox[{
+    "This", " ", "function", " ", "takes", " ", "a", " ", "data", " ", 
+     "array", " ", "and", " ", "returns", " ", "an", " ", "array", " ", "of", 
+     " ", "the", " ", "product", " ", "states"}], "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"Block", "[", 
+    RowBox[{
+     RowBox[{"{", "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"input", "[", 
+      RowBox[{"[", 
+       RowBox[{"All", ",", "All", ",", "4"}], "]"}], "]"}]}], "]"}]}], 
+  "\[IndentingNewLine]", "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"plotProductDist", "[", "input_", "]"}], ":=", 
+   RowBox[{"(*", 
+    RowBox[{
+    "This", " ", "function", " ", "takes", " ", "a", " ", "data", " ", 
+     "array", " ", "and", " ", "plots", " ", "the", " ", "sum", " ", "of", 
+     " ", "the", " ", "products", " ", "over", " ", 
+     RowBox[{"time", ".", " ", "This"}], " ", "should", " ", "show", " ", 
+     "if", " ", "one", " ", "product", " ", "is", " ", 
+     RowBox[{"dominant", ".", " ", "Uses"}], " ", 
+     RowBox[{"getProducts", ".", " ", "Returns"}], " ", "a", " ", 
+     RowBox[{"Plot", "."}]}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{"Block", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"products", ",", "samples", ",", "productdist"}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"products", "=", 
+       RowBox[{"getProducts", "[", "input", "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"samples", "=", 
+       RowBox[{"Length", "[", "products", "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"productdist", "=", 
+       RowBox[{"Map", "[", 
+        RowBox[{"Total", ",", "products"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"ListLinePlot", "[", "productdist", "]"}]}]}], "]"}]}], 
+  "\[IndentingNewLine]", "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"plotNumReacted", "[", "input_", "]"}], ":=", 
+   RowBox[{"(*", 
+    RowBox[{
+    "This", " ", "function", " ", "takes", " ", "a", " ", "data", " ", 
+     "array", " ", "and", " ", "plots", " ", "the", " ", "sum", " ", "of", 
+     " ", "the", " ", "Abs", " ", "of", " ", "the", " ", 
+     RowBox[{"products", ".", " ", "It"}], " ", "should", " ", "show", " ", 
+     "how", " ", "fast", " ", "the", " ", "reactions", " ", "are", " ", 
+     "taking", " ", 
+     RowBox[{"place", ".", " ", "Uses"}], " ", 
+     RowBox[{"getProducts", ".", " ", "Returns"}], " ", "a", " ", 
+     RowBox[{"Plot", "."}]}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{"Block", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"products", ",", "samples", ",", "numReacted"}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"products", "=", 
+       RowBox[{"getProducts", "[", "input", "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"samples", "=", 
+       RowBox[{"Length", "[", "products", "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"numReacted", "=", 
+       RowBox[{"Map", "[", 
+        RowBox[{"Total", ",", 
+         RowBox[{"Abs", "[", "products", "]"}]}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"ListLinePlot", "[", "numReacted", "]"}]}]}], "]"}]}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"plotsProd", "[", "input_", "]"}], ":=", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{
+     "This", " ", "function", " ", "takes", " ", "a", " ", "data", " ", 
+      "array", " ", "and", " ", "plots", " ", "the", " ", "sum", " ", "of", 
+      " ", "the", " ", "Abs", " ", "of", " ", "the", " ", "products"}], ",", 
+     " ", 
+     RowBox[{
+     "the", " ", "sum", " ", "of", " ", "the", " ", "products", " ", "over", 
+      " ", "time"}], ",", " ", 
+     RowBox[{
+      RowBox[{"and", " ", "the", " ", "ratio", " ", "of", " ", "prod"}], " ", 
+      "+", " ", 
+      RowBox[{"to", " ", 
+       RowBox[{"total", ".", " ", "It"}], " ", "should", " ", "show", " ", 
+       "how", " ", "fast", " ", "the", " ", "reactions", " ", "are", " ", 
+       "taking", " ", 
+       RowBox[{"place", ".", " ", "Uses"}], " ", 
+       RowBox[{"getProducts", ".", " ", "Returns"}], " ", 
+       RowBox[{"None", ".", " ", "Prints"}], " ", "3", " ", "Plots"}]}]}], 
+    "*)"}], "\[IndentingNewLine]", 
+   RowBox[{"Block", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "products", ",", "samples", ",", "numReacted", ",", "productDist", ",", 
+       "ratioPlusToTotal", ",", "plotStyle"}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"products", "=", 
+       RowBox[{"getProducts", "[", "input", "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"samples", "=", 
+       RowBox[{"Length", "[", "products", "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"numReacted", "=", 
+       RowBox[{"ParallelMap", "[", 
+        RowBox[{"Total", ",", 
+         RowBox[{"Abs", "[", "products", "]"}]}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"productDist", "=", 
+       RowBox[{"ParallelMap", "[", 
+        RowBox[{"Total", ",", "products"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"ratioPlusToTotal", "=", 
+       RowBox[{
+        FractionBox["1", "2"], "+", 
+        RowBox[{
+         FractionBox["1", "2"], 
+         FractionBox["numReacted", "productDist"]}]}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"plotStyle", "=", 
+       RowBox[{"{", 
+        RowBox[{"PlotStyle", "\[Rule]", 
+         RowBox[{"Directive", "[", 
+          RowBox[{"18", ",", "Black"}], "]"}]}], "}"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", 
+       RowBox[{"ListLinePlot", "[", 
+        RowBox[{"numReacted", ",", 
+         RowBox[{"PlotLabel", "\[Rule]", "\"\<Number Reacted\>\""}], ",", 
+         "plotStyle"}], "]"}], "]"}], ";", "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", 
+       RowBox[{"ListLinePlot", "[", 
+        RowBox[{"productDist", ",", 
+         RowBox[{"PlotLabel", "\[Rule]", "\"\<Product Distribution\>\""}], 
+         ",", "plotStyle"}], "]"}], "]"}], ";", "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", 
+       RowBox[{"ListLinePlot", "[", 
+        RowBox[{"ratioPlusToTotal", ",", 
+         RowBox[{"PlotLabel", "\[Rule]", "\"\<Ratio of Major to Total\>\""}], 
+         ",", "plotStyle"}], "]"}], "]"}], ";"}]}], "]"}]}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"importDataOnly", "[", "filepath_", "]"}], ":=", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+    "This", " ", "function", " ", "takes", " ", "a", " ", "file", " ", "path",
+      " ", "to", " ", "a", " ", "formatted", " ", "data", " ", "file"}], ",", 
+    " ", 
+    RowBox[{
+    "and", " ", "returns", " ", "just", " ", "the", " ", "data", " ", "as", 
+     " ", "an", " ", "array", " ", "that", " ", "can", " ", "be", " ", "used",
+      " ", "as", " ", "input", " ", "to", " ", "plotNumReacted"}], ",", " ", 
+    "plotProductDist", ",", " ", 
+    RowBox[{"among", " ", 
+     RowBox[{"others", "."}]}]}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"ToExpression", "[", 
+    RowBox[{"Import", "[", "filepath", "]"}], "]"}], "[", 
+   RowBox[{"[", 
+    RowBox[{"3", ";;", "All"}], "]"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+     RowBox[{
+     "This", " ", "indexing", " ", "will", " ", "ignore", " ", "the", " ", 
+      "header", " ", "and", " ", "just", " ", "give", " ", "the", " ", 
+      RowBox[{"data", ".", " ", "\[IndentingNewLine]", "The"}], " ", "header",
+       " ", "is", " ", "the", " ", "first", " ", "two", " ", 
+      RowBox[{"rows", ".", " ", "The"}], " ", "first", " ", "is", " ", "a", 
+      " ", "set", " ", "of", " ", "strings", " ", "meant", 
+      "\[IndentingNewLine]", "to", " ", "be", " ", "human"}], "-", 
+     RowBox[{"readable", " ", "telling", " ", "about", " ", "simulation", " ", 
+      RowBox[{"parameters", ".", " ", "The"}], " ", "second", " ", "is", " ", 
+      "the", " ", "size"}]}], ",", " ", 
+    RowBox[{"number", " ", "of", " ", "steps"}], ",", " ", 
+    RowBox[{"and", " ", "sampling", " ", "interval"}], ",", " ", 
+    RowBox[{
+     RowBox[{"meant", " ", "to", " ", "be", " ", "machine"}], "-", 
+     RowBox[{"readable", " ", 
+      RowBox[{
+       RowBox[{"(", "integers", ")"}], "."}]}]}]}], "*)"}]}]}], "Input",
+ CellChangeTimes->CompressedData["
+1:eJwdyltIU3EAx/Gxwu0hw0uWuq1tTjeLyktu7tSWHS1vWMIkt4cQOpiTLNci
+qYceAqXG6qUHI1+GmLckQbzhhbV0EaQ0XYpL3VCR9MExR0WXdWb+f+fhy+fl
+K2cshpt8Ho+XSYJWyuYWCXboZH28F1pKZGuw+Kk1BHO6fN/hbcXET6gZvB6B
+xpzEKBy9dSdGTAwL3hyCZz7fj4P1bU1SyDekZMCBfs9J2FDdREHpNk3DgLKq
+Ek6Jo5y6Fx1GKD4W5lQGm9slxAOtDk7NuX9TUuLYsvkTfKxiu9KJ2ixhNxxn
+xUsZRFOLPwCrt5qDkBrxhaG6V/c3D//s2z040PiRryaGohsCuK7fVcCtbHk6
+dKg7NXDFXZQPi/v+F8DcB/PX4LDk4CvY53zpgKddvR3wSMjJmcakTEL7L7kb
+9rwOXNUQp+cUNfBCXcWzfCJj9nLWDlnboE/43gHXKm0iLbFcOS2D/UN8NbTF
+PC+EnZdHGUgf3qyHIrPTw6m764WGTP0SbGwt+gr1e7Zdirjq9/+ATDDhD4xl
+RRG4qUqqookzjz7cgMLjlndQF3/PBe3nH3pLiXnfgovQ/8WzDLVx7Cq8aB9J
+KCOWWheOwtQTnlTI8i6dhaZTEgr+bnlyBe4DFeQOFw==
+  "]],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"dat1", "=", 
+   RowBox[{
+   "importDataOnly", "[", 
+    "\"\</Users/Tommy/Documents/BU/CH_655_Stat_Mech/New_Final_Project/lattice-\
+reaction-model/output/lat_react_out20141215223217\>\"", "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"dat2", "=", 
+   RowBox[{
+   "importDataOnly", "[", 
+    "\"\</Users/Tommy/Documents/BU/CH_655_Stat_Mech/New_Final_Project/lattice-\
+reaction-model/output/lat_react_out20141215223229\>\"", "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"dat3", "=", 
+    RowBox[{
+    "importDataOnly", "[", 
+     "\"\</Users/Tommy/Documents/BU/CH_655_Stat_Mech/New_Final_Project/\
+lattice-reaction-model/output/lat_react_out20141215223251\>\"", "]"}]}], 
+   ";"}], " ", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{"doesn", "'"}], "t", " ", 
+    RowBox[{"work", "?"}]}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"dat4", "=", 
+   RowBox[{
+   "importDataOnly", "[", 
+    "\"\</Users/Tommy/Documents/BU/CH_655_Stat_Mech/New_Final_Project/lattice-\
+reaction-model/output/lat_react_out20141215223254\>\"", "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"dat5", "=", 
+   RowBox[{
+   "importDataOnly", "[", 
+    "\"\</Users/Tommy/Documents/BU/CH_655_Stat_Mech/New_Final_Project/lattice-\
+reaction-model/output/lat_react_out20141215223260\>\"", "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"dat6", "=", 
+   RowBox[{
+   "importDataOnly", "[", 
+    "\"\</Users/Tommy/Documents/BU/CH_655_Stat_Mech/New_Final_Project/lattice-\
+reaction-model/output/lat_react_out20141215223279\>\"", "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"dat7", "=", 
+    RowBox[{
+    "importDataOnly", "[", 
+     "\"\</Users/Tommy/Documents/BU/CH_655_Stat_Mech/New_Final_Project/\
+lattice-reaction-model/output/lat_react_out20141215223281\>\"", "]"}]}], 
+   ";"}], " ", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{"doesn", "'"}], "t", " ", 
+    RowBox[{"work", "?"}]}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"dat8", "=", 
+    RowBox[{
+    "importDataOnly", "[", 
+     "\"\</Users/Tommy/Documents/BU/CH_655_Stat_Mech/New_Final_Project/\
+lattice-reaction-model/output/lat_react_out20141215223287\>\"", "]"}]}], 
+   ";"}], " ", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{"doesn", "'"}], "t", " ", 
+    RowBox[{"work", "?"}]}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"dats", "=", 
+   RowBox[{"{", 
+    RowBox[{"dat1", ",", "dat2", ",", 
+     RowBox[{"(*", 
+      RowBox[{"dat3", ","}], "*)"}], "dat4", ",", "dat5", ",", "dat6"}], 
+    RowBox[{"(*", 
+     RowBox[{",", "dat7", ",", "dat8"}], "*)"}], "}"}]}], ";"}]}], "Input"],
+
+Cell[BoxData[
+ RowBox[{"ParallelMap", "[", 
+  RowBox[{"plotsProd", ",", "dats"}], "]"}]], "Input"]
+},
+WindowSize->{808, 713},
+WindowMargins->{{-1111, Automatic}, {Automatic, -517}},
+FrontEndVersion->"10.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (June 27, \
+2014)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 18105, 454, 1980, "Input"],
+Cell[18666, 476, 2696, 79, 573, "Input"],
+Cell[21365, 557, 98, 2, 28, "Input"]
+}
+]
+*)
+
+(* End of internal cache information *)
+
