@@ -50,11 +50,10 @@ class Lattice_Cell_Object:
         molecprob is an optional argument that must be between 0 and 1.
         It is the probability of a molecule starting in this lattice site.
         reaction_energy is essentially the activation energy of the reaction.
-        It is in units of k_B T.
         reaction_favoritism is the relative amount the
         positive product is favored in the reaction.
         assoc_stabilization is the amount association is favored
-        over molecules by themselves in units of k_B T.
+        over molecules by themselves.
         assoc_favoritism is the relative amount the
         positive product is favored in staying associated.
         excit_prob is the probability of an excitation at any step.
