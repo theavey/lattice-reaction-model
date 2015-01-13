@@ -18,7 +18,7 @@ def run_react(arguments = (0.1, 0.1, 2.0, 0.5, 2.0, 0.5, 1.0),
     This will take arguments of parameters for each cell, number of steps,
     length along a side of the lattice, sampling interval, and dimensionality.
     The parameters for each cells are
-    molecprob, reaction_rate,
+    molecprob, reaction_energy,
     reaction_favoritism, assoc_stabilization,
     assoc_favoritism, excit_prob, beta
     All arguments are optional. It will return an array of arrays of strings

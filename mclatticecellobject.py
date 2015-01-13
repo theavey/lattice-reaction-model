@@ -10,6 +10,8 @@ from random import shuffle
 # shuffle(list) will create a permutation of list in place with no return
 from math import exp
 # exponential function
+from math import sqrt
+# square root function
 
 
 def pm():
@@ -33,7 +35,7 @@ class Lattice_Cell_Object:
     or molecules.
     excite will possibly excite some molecules that are present."""
 
-    def __init__(self, molecprob = 0.01, reaction_rate = 0.1,
+    def __init__(self, molecprob = 0.01, reaction_energy = 0.1,
                  reaction_favoritism = 2.0, assoc_stabilization = 0.1,
                  assoc_favoritism = 2.0, excit_prob = 0.01,
                  beta = 1.0,
@@ -42,21 +44,23 @@ class Lattice_Cell_Object:
         chance of population
         of molecules determined by molecprob.
         All arguments are optional.
-        Syntax: __init__(molecprob, reaction_rate,
+        Syntax: __init__(molecprob, reaction_energy,
         reaction_favoritism, assoc_stabilization,
         association_favoritism, excitation_probability, beta, dimension)
         molecprob is an optional argument that must be between 0 and 1.
         It is the probability of a molecule starting in this lattice site.
+        reaction_energy is essentially the activation energy of the reaction.
+        It is in units of k_B T.
         reaction_favoritism is the relative amount the
         positive product is favored in the reaction.
         assoc_stabilization is the amount association is favored
-        over molecules by themselves.
+        over molecules by themselves in units of k_B T.
         assoc_favoritism is the relative amount the
         positive product is favored in staying associated.
         excit_prob is the probability of an excitation at any step.
-        beta is the inverse temperature.
+        beta is the unitless inverse temperature.
         dimension is the dimensionality of the lattice. Probably
-        going to stay at 2d.
+        going to stay at 2D.
         Returns None."""
         # Check values of inputs
         if type(molecprob) != float:
@@ -66,8 +70,8 @@ class Lattice_Cell_Object:
             raise ValueError('moleprob must be less than 1')
         elif molecprob <= 0:
             raise ValueError('moleprob must be greater than 0')
-        elif reaction_rate <= 0:
-            raise ValueError('reaction rate must be greater than 0')
+        elif reaction_energy <= 0:
+            raise ValueError('reaction energy must be greater than 0')
         elif type(reaction_favoritism) != float:
             raise TypeError('reaction favoritism must be a float')
         elif assoc_stabilization <= 0:
@@ -100,16 +104,22 @@ class Lattice_Cell_Object:
         # Need to define relevant variables for this!!
         # They should be taken as input to init and set as internal
         # variables here
-        self.p_react_pos = reaction_rate * reaction_favoritism
-        self.p_react_neg = reaction_rate / reaction_favoritism
-        self.p_assoc     = assoc_stabilization
-        self.p_assoc_pos = assoc_stabilization * assoc_favoritism
-        self.p_assoc_neg = assoc_stabilization / assoc_favoritism
+        self.e_react_pos = reaction_energy / reaction_favoritism
+        self.e_react_neg = reaction_energy
+        self.e_assoc_pos = assoc_stabilization * assoc_favoritism
+        self.e_assoc_neg = assoc_stabilization
+        # This can support negative association favoritism now by just using
+        # the arithemetic mean instead.
+        if assoc_favoritism < 0.0:
+            self.e_assoc = (self.e_assoc_neg + self.e_assoc_pos) / 2
+        else:
+            self.e_assoc = assoc_stabilization * sqrt(assoc_favoritism)
         self.excit_prob  = excit_prob
         self.max_move    = 2 * dimension
-        # For now, the inverse temp will just be 1. This is a parameter
-        # that can be varied later. Not dealing with it for now.
         self.beta        = beta
+        # This number is used to determine the product repulsion in e_of_state
+        # It depends on beta such that at high beta, it shouldn't overflow.
+        self.large_num   = 700 / (2.5 * beta)
         #self.counter     = 1
 
     def __repr__(self):
@@ -197,34 +207,39 @@ class Lattice_Cell_Object:
         #
         if self.product:
             return
+        # This will be 0 if not fully occupied.
         occupancy_product = self.catalyst * self.htmf * self.cinna
+        # This assumes only one thing needs to be excited and that both the
+        # HTMF and TADDOL catalyst can be excited
         total_excit = max(self.htmf_excitation_state,
                           self.catalyst_excitation_state)
         # If not all occupied, skip this, move to reducing excitation
-        # state
-        if occupancy_product == 0:
-            pass
-        # This will product the negative product with some prob.
+        # state.
+        # This will produce the negative product with some prob.
         # If it does react, it will create product,
         # and remove both reactants and all excitation.
-        elif occupancy_product == -1:
-            weighted_react_prob = total_excit * self.p_react_neg
-            if random() < weighted_react_prob:
+        if occupancy_product == -1:
+            reaction_energy = self.e_react_neg
+            # with psuedo-MMC probability, this will react. The probability of
+            # the reaction is attenuated by the excitation of the molecules.
+            if random() < total_excit * exp(-self.beta * reaction_energy):
+                # Create product.
                 self.product = -1
+                # Remove reactants and excitation.
                 self.htmf    =  0
                 self.htmf_excitation_state     = 0
                 self.cinna   =  0
                 self.catalyst_excitation_state = 0
         # Does the same except for the positive product.
         elif occupancy_product == 1:
-            weighted_react_prob = total_excit * self.p_react_pos
-            if random() < weighted_react_prob:
+            reaction_energy = self.e_react_pos
+            if random() < total_excit * exp(-self.beta * reaction_energy):
                 self.product = 1
                 self.htmf    = 0
                 self.htmf_excitation_state     = 0
                 self.cinna   =  0
                 self.catalyst_excitation_state = 0
-        # Reduce the excitation state
+        # Reduce the excitation state (need to be floats, not integers).
         self.htmf_excitation_state /= 2.
         self.catalyst_excitation_state /= 2.
 
@@ -285,14 +300,18 @@ class Lattice_Cell_Object:
                 c_state[mol] = proposeto[mol]
                 p_state[mol] = proposefrom[mol]
                 # If it is an "excitable" molecule, need to include
-                # excitation state as well. Will check that here:
+                # excitation state as well. Will check that here.
+                # The only excitable molecules as implemented are the HTMF
+                # and TADDOL (catalyst) at locations 0 and 2 in the vector.
                 #
                 # If changing the state to a vector as opposed to separate
                 # variables, this will obviously need to be changed here.
                 #
                 if mol in (0, 2):
-                    c_state[mol + 1] = p_state[mol + 1]
-                    p_state[mol + 1] = 0
+                    proposeto[mol + 1]   = p_state[mol + 1]
+                    proposefrom[mol + 1] = c_state[mol + 1]
+                    c_state[mol + 1] = proposeto[mol + 1]
+                    p_state[mol + 1] = proposefrom[mol + 1]
             else:
                 # reset proposes for next time around the loop if not accepted
                 proposeto[mol]   = c_state[mol]
@@ -334,15 +353,15 @@ class Lattice_Cell_Object:
         # Term to help ensure nothing overlaps with a product.
         # It will be 0 if product is 0, large negative if it has product and
         # nothing else, otherwise it will be quite large and positive.
-        product_repulsion = abs(state[5]) * (occ_sum - 0.5) * 250
+        product_repulsion = abs(state[5]) * (occ_sum - 0.5) * self.large_num
         # Stabilization due to occupancy. This depends on the sign of
         # occ_prod and the magnitude of occ_sum.
         if occ_prod == -1:
-            stabil = self.p_assoc_neg * occ_sum
+            stabil = self.e_assoc_neg * occ_sum
         elif occ_prod == 1:
-            stabil = self.p_assoc_pos * occ_sum
+            stabil = self.e_assoc_pos * occ_sum
         else:
-            stabil = self.p_assoc     * occ_sum
+            stabil = self.e_assoc     * occ_sum
         # Finally, calculate the energy. The stabilization
         # will lower the energy (making it more stable).
         energy = product_repulsion - stabil

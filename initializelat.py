@@ -82,13 +82,13 @@ class Lattice:
         # get arguments from arguments tuple to pass to
         # site.Lattice_Cell_Object to initialize each lattice site
         molecprob           = float(arguments[0])
-        reaction_rate       = float(arguments[1])
+        reaction_energy     = float(arguments[1])
         reaction_favoritism = float(arguments[2])
         assoc_stabilization = float(arguments[3])
         assoc_favoritism    = float(arguments[4])
         excit_prob          = float(arguments[5])
         beta                = float(arguments[6])
-        return site.Lattice_Cell_Object(molecprob, reaction_rate,
+        return site.Lattice_Cell_Object(molecprob, reaction_energy,
                                  reaction_favoritism, assoc_stabilization,
                                  assoc_favoritism, excit_prob,
                                  beta, self.dimension)
