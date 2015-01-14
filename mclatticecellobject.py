@@ -271,7 +271,7 @@ class Lattice_Cell_Object:
         # If changing the state to a vector as opposed to separate
         # variables, this will obviously need to be changed here.
         #
-        molecule_list = [0, 2, 4]
+        molecule_list = [0, 2, 4, 5]
         # randomize this list to check each sequentially, but in a
         # random order (shuffle does this in place, aka changes variable
         # definition)
@@ -281,18 +281,24 @@ class Lattice_Cell_Object:
         # proposeto is the site being moved into, and proposefrom is being
         # moved out of.
         #
-        # The colon is absolutely necessary here, otherwise c_state will
+        # The [colon] is absolutely necessary here, otherwise c_state will
         # change every time propose is changed. I imagine this is slower
         # unfortunately, because it probably has to go item-wise.
         #
         proposeto   = c_state[:]
         proposefrom = p_state[:]
-        # The [5] is for the product, which I think I want moved first.
-        # Might get rid of this later if I can get it working.
-        for mol in [5] + molecule_list:
+        for mol in molecule_list:
             # Try to switch each molecule between the two states
-            proposeto[mol]   = p_state[mol]
-            proposefrom[mol] = c_state[mol]
+            # For the HTMF and cinnamate (2 and 4), it will also randomly
+            # try to flip the sign. The catalyst doesn't have an orientation
+            # and the product shouldn't change configuration. It will flip
+            # it possibly by multiplying by +- 1.
+            if mol in (2, 4):
+                proposeto[mol]   = pm() * p_state[mol]
+                proposefrom[mol] = pm() * c_state[mol]
+            else:
+                proposeto[mol]   = p_state[mol]
+                proposefrom[mol] = c_state[mol]
             # Check proposal. If it returns true, move was accepted,
             # otherwise it was rejected. Set states accordingly.
             if self.check_proposed(proposeto, proposefrom, c_state, p_state):
