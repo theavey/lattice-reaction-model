@@ -5,7 +5,7 @@
 #$ -M theavey@bu.edu
 #$ -m beas
 #$ -l h_rt=02:00:00
-#$ -N jobbatch2
+#$ -N jobbatch
 
 # name of gaussian input and output files (assumed to be in our home directory)
 # EDIT THESE TWO LINES
